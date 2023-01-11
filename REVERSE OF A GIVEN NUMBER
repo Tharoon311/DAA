@@ -1,0 +1,20 @@
+#include <stdio.h>
+
+// function to reverse the digits of a given number
+int reverse(int num) {
+    int reversed = 0;
+    while (num != 0) {
+        int digit = num % 10;
+        reversed = reversed * 10 + digit;
+        num /= 10;
+    }
+    return reversed;
+}
+
+int main() {
+    int num;
+    printf("Enter a number: ");
+    scanf("%d", &num);
+    printf("The reverse of the number is: %d\n", reverse(num));
+    return 0;
+}
