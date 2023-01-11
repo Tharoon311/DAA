@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_NODES 100
+
+// structure to represent a node of the tree
+struct node {
+  int key;
+  int freq;
+  struct node* left;
+  struct node* right;
+};
+
+// function to create a new node
+struct node* newNode(int key, int freq) {
+  struct node* node = (struct node*) malloc(sizeof(struct node));
+  node->key = key;
+  node->freq = freq;
+  node->left = node->right = NULL;
+  return node;
+}
+
+// function to create an optimal binary search tree
+struct node* createOptimalBST(int keys[], int freq[], int n) {
+  // table to store the subproblem solutions
+  int cost[n][n];
+  struct node* roots[n][n];
+
+  // initialize the cost table
+  for (int i = 0; i < n; i++) {
+    cost[i][i] = freq[i];
+    roots[i][i] = newNode(keys[i], freq[i]);
+  }
+
+  // fill in the cost table and roots table using dynamic programming
+  for (int len = 2; len <= n; len++) {
+    for (int i = 0; i <= n - len; i++) {
+      int j = i + len - 1;
+      cost[i][j] = INT_MAX;
+
+      for (int k = i; k <= j; k++) {
+        int c = (k > i) ? cost[i][k-1] : 0;
+        c += (k < j) ? cost[k+1][j] : 0;
+        c += freq[j];
+
+        if (c < cost[i][j]) {
+          cost[i][j] = c;
+          roots[i][j] = newNode(keys[k], freq[k]);
+          if (k > i) {
+            roots[i][j]->left = roots[i][k-1];
+          }
+          if (k < j) {
+            roots[i][j]->right = roots[k+1][j];
+          }
+        }
+      }
+    }
+  }
+
+  // return the optimal binary search tree
+  return roots[0][n-1];
+}
+
+int main() {
+  int keys[] = {10, 12, 20, 35, 46};
+  int freq[] = {34, 8, 50, 21, 16};
+  int n = sizeof(keys) / sizeof(keys[0]);
+
+  struct node* root = createOptimalBST(keys, freq, n);
+
+  printf("Optimal binary search tree:");
+  // code to print the tree
+  return 0;
+}
