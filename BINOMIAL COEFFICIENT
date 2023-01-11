@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+#define MAX_N 100
+
+// function to calculate the binomial coefficient using dynamic programming
+int binomialCoefficient(int n, int k) {
+  int C[MAX_N+1][MAX_N+1];
+  int i, j;
+
+  // initialize the first column of C[][]
+  for (i = 0; i <= n; i++) {
+    C[i][0] = 1;
+  }
+
+  // initialize the first row of C[][]
+  for (j = 0; j <= k; j++) {
+    C[0][j] = 0;
+  }
+
+  // fill in the rest of the entries in C[][] using dynamic programming
+  for (i = 1; i <= n; i++) {
+    for (j = 1; j <= k; j++) {
+      if (j > i) {
+        C[i][j] = 0;
+      } else {
+        C[i][j] = C[i-1][j-1] + C[i-1][j];
+      }
+    }
+  }
+
+  return C[n][k];
+}
+
+int main() {
+  int n, k;
+  printf("Enter the value of n and k: ");
+  scanf("%d%d", &n, &k);
+  printf("The binomial coefficient C(%d, %d) is %d\n", n, k, binomialCoefficient(n, k));
+  return 0;
+}
