@@ -1,38 +1,46 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <limits.h>
 
-#define V 4
-#define INF INT_MAX
+#define N 4 // Number of cities
 
-int dist[V][V] = { { 0, 20, 42, 25 },
-				   { 20, 0, 30, 34 },
-				   { 42, 30, 0, 10 },
-				   { 25, 34, 10, 0 } };
+int graph[N][N] = {
+    {0, 10, 15, 20},
+    {10, 0, 35, 25},
+    {15, 35, 0, 30},
+    {20, 25, 30, 0}
+};
 
-int dp[16][V];
+int visited[N];
+int min_cost = INT_MAX;
 
-int TSP(int mask, int pos) {
-	if (mask == (1 << V) - 1)
-		return dist[pos][0];
-
-	if (dp[mask][pos] != -1)
-		return dp[mask][pos];
-
-	int ans = INF;
-	for (int city = 0; city < V; city++) {
-		if ((mask & (1 << city)) == 0) {
-			int newAns = dist[pos][city] + TSP(mask | (1 << city), city);
-			ans = min(ans, newAns);
-		}
-	}
-	return dp[mask][pos] = ans;
+void tsp(int current_city, int visited_cities, int cost)
+ {
+    if (visited_cities == (1 << N) - 1) 
+    { // All cities visited
+        cost += graph[current_city][0]; // Return to the starting city
+        if (cost < min_cost)
+        {
+            min_cost = cost;
+        }
+        return;
+    }
+    
+    for (int next_city = 0; next_city < N; ++next_city)
+     {
+        if (!visited[next_city] && graph[current_city][next_city] != 0) 
+        {
+            visited[next_city] = 1;
+            tsp(next_city, visited_cities | (1 << next_city), cost + graph[current_city][next_city]);
+            visited[next_city] = 0;
+        }
+    }
 }
 
 int main() {
-	for (int i = 0; i < (1 << V); i++)
-		for (int j = 0; j < V; j++)
-			dp[i][j] = -1;
-	printf("Travelling Salesman Distance: %d", TSP(1, 0));
-	return 0;
+    visited[0] = 1; // Start from city 0
+    tsp(0, 1, 0);   // Start with the first city
+    
+    printf("Minimum cost of TSP: %d\n", min_cost);
+    
+    return 0;
 }
